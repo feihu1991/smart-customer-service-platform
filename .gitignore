@@ -50,5 +50,19 @@ test
 prompt
 
 server.log
-# Skills directory
-/skills/
+
+# Database files
+db/*.db
+db/*.db-journal
+
+# Upload and download dirs
+/upload/
+/download/
+
+# Z.ai internal
+.zscripts/
+.z-ai-config
+skills/
+
+# Mini services runtime
+mini-services/*/node_modules
