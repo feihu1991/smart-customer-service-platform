@@ -1,0 +1,92 @@
+[
+  {
+    "url": "https://post.smzdm.com/p/aggme7q7",
+    "name": "小米AI负责人罗福莉警示大模型价格战引发恶性循环",
+    "snippet": "7 days ago — MiMo - V2 - Pro 本来就是 OpenRouter 周榜第一，单周消耗破3万亿，性能对标 ... MiMo调用量 超1万亿词元！小米发布Xiaomi MiMo Token Plan：更易统计更 ...",
+    "host_name": "post.smzdm.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://h5.ifeng.com/c/vivoArticle/v002KJ6O-_rwlqUso0-_LNbOn7Fjry5XJnmHxGnNp3j10--0Uw__?vivoBusiness=hiboardnews",
+    "name": "小米MiMo-V2-Pro获OpenRouter周榜第一市占率超30%",
+    "snippet": "【CNMO科技消息】3月27日，小米官方发文称，自研大模型Xiaomi MiMo - V2 - Pro 在 OpenRouter 平台最新周榜中位列第一，成为该平台首个周Token消耗量超过3万亿的模型，模型使用市 ...",
+    "host_name": "h5.ifeng.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.ithome.com/0/914/844.htm",
+    "name": "小米MiMo 模型API 平台开放充值功能：输入0.7 元/ M tokens",
+    "snippet": "Jan 20, 2026 — 小米 MiMo API平台今日开放充值功能，即将上线计费系统。国内用户需实名认证，支持小米/支付宝/微信支付；海外用户可直接充值。新老用户可领取专属免费 ...",
+    "host_name": "www.ithome.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://jimo.studio/blog/openclaw-v2026331-upgrade-critical-configuration-guide",
+    "name": "OpenClaw 2026.3.31 升级后必须注意的两个关键配置",
+    "snippet": "Mar 31, 2026 — 近日将OpenClaw 升级至2026.3.31 版本后，许多用户遇到了两个颇具迷惑性的问题：明明已经关闭了审批相关配置，命令却仍然卡在Exec approval 等待手动确认 ...",
+    "host_name": "jimo.studio",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.binance.com/el/square/profile/ssadasdaw",
+    "name": "梁赛",
+    "snippet": "6 days ago — Claude Code 新版本有个坑： 缓存命中 有问题，会导致消耗莫名变大。 ... 结果答案揭晓：是小米的 MiMo - V2 - Pro 。 而且这还没完,小米一口气发布了3个 ...",
+    "host_name": "www.binance.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/SillyTavernAI/comments/1r23017/glm_5_released_today/?tl=zh-hans",
+    "name": "GLM 5 今天发布了: r/SillyTavernAI",
+    "snippet": "• 2个月前. 这主要取决于你的服务提供商是否提供 缓存 ，以及你 命中缓存 的频率和一致性。在我看来，没有 缓存 的角色扮演简直就是个无底洞。我看了我之前几 ...",
+    "host_name": "www.reddit.com",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/uptonking/note4yaoo/blob/main/lib-ai-app-pm-products.md",
+    "name": "lib-ai-app-pm-products.md - uptonking/note4yaoo",
+    "snippet": "Dec 7, 2024 — 扣减费用= token 消耗量× 模型单价，对应的费用将直接从充值余额或赠送余额中进行扣减。 百万tokens输入（ 缓存命中 ） 0.2元; 百万tokens输入（缓存未命中） 2元 ...",
+    "host_name": "github.com",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://post.smzdm.com/p/a7g7mmg5",
+    "name": "国产大模型商业化分化加剧：开源降价与闭源涨价并行",
+    "snippet": "【 MiMo 大模型实力强劲震惊海外开发者】 国产大模型这波在海外直接杀疯！ OpenRouter 最新周榜里，小米 MiMo - V2 -Flash API 调用量 飙到第二，还是国产大模型第一；Artificial ...",
+    "host_name": "post.smzdm.com",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://t.me/s/TestFlightCN?before=40554",
+    "name": "科技圈🎗在花频道",
+    "snippet": "小米 MiMo 团队宣布，为回馈开发者支持，将定向限免周期延长一周至 4 月 2 日。在此期间，用户可通过相关agent 框架定向免费试用 MiMo v2 Pro 和Omni。 限免仅适用于指定 ...",
+    "host_name": "t.me",
+    "rank": 8,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.xiaoyuzhoufm.com/podcast/698607863917a859c44ddc3f",
+    "name": "Hacker News | 小宇宙- 听播客",
+    "snippet": "2. 尽早优化：通过函数内联、强制循环展开等方式，让代码模式更容易在编译流程的早期被识别和优化。",
+    "host_name": "www.xiaoyuzhoufm.com",
+    "rank": 9,
+    "date": "",
+    "favicon": ""
+  }
+]
