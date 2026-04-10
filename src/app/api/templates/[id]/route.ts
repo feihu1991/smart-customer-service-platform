@@ -1,6 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+// GET: 获取单个模板
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const template = await db.replyTemplate.findUnique({
+      where: { id },
+    })
+
+    if (!template) {
+      return NextResponse.json(
+        { success: false, message: '模板不存在' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ success: true, data: template })
+  } catch (error) {
+    console.error('Get template error:', error)
+    return NextResponse.json(
+      { success: false, message: '获取模板失败' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT: 更新模板
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -40,6 +70,7 @@ export async function PUT(
   }
 }
 
+// DELETE: 删除模板
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

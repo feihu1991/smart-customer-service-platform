@@ -92,23 +92,27 @@ model Product {
 
 // 评价
 model Review {
-  id          String        @id @default(cuid())
-  shopId      String
-  productId   String
-  orderId     String?
-  buyerName   String
-  buyerAvatar String?
-  rating      Int
-  content     String
-  images      String?
-  sentiment   String        @default("neutral")
-  category    String?
-  replyStatus String        @default("pending")
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  replies     ReviewReply[]
-  shop        Shop          @relation(fields: [shopId], references: [id])
-  product     Product       @relation(fields: [productId], references: [id])
+  id              String        @id @default(cuid())
+  shopId          String
+  productId       String
+  orderId         String?
+  buyerName       String
+  buyerAvatar     String?
+  rating          Int
+  content         String
+  images          String?
+  sentiment       String        @default("neutral")
+  category        String?
+  replyStatus     String        @default("pending")
+  replySentAt     DateTime?
+  recoveryStatus  String        @default("pending") // pending/contacted/recovered/failed
+  recoveredAt     DateTime?
+  buyerFeedback   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  replies         ReviewReply[]
+  shop            Shop          @relation(fields: [shopId], references: [id])
+  product         Product       @relation(fields: [productId], references: [id])
 }
 
 // 评价回复

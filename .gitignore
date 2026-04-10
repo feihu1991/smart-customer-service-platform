@@ -66,3 +66,8 @@ skills/
 
 # Mini services runtime
 mini-services/*/node_modules!/.env.example
+
+# env files
+.env
+.env.local
+.env.*.local
