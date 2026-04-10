@@ -7,6 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 订阅等级枚举
+enum SubscriptionTier {
+  free
+  basic
+  pro
+  enterprise
+}
+
+// 用户
+model User {
+  id                 String         @id @default(cuid())
+  phone              String         @unique
+  password           String?
+  name               String         @default("新用户")
+  avatar             String?
+  subscriptionTier   SubscriptionTier @default(free)
+  dailyUsageCount    Int            @default(0)
+  lastUsageDate      DateTime       @default(now())
+  dailyLimit         Int            @default(3)       // 每日限制次数，免费用户3次
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  subscriptions      Subscription[]
+  sessions           UserSession[]
+}
+
+// 用户会话（用于JWT token管理）
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  deviceInfo   String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 订阅记录
+model Subscription {
+  id               String            @id @default(cuid())
+  userId           String
+  tier             SubscriptionTier
+  status           String            @default("active")  // active, cancelled, expired
+  startDate        DateTime          @default(now())
+  endDate          DateTime?
+  autoRenew        Boolean           @default(true)
+  dailyLimit       Int               @default(3)        // 该套餐的每日限制次数
+  price            Float             @default(0)        // 价格（分）
+  transactionId    String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 // 店铺
 model Shop {
   id           String        @id @default(cuid())

@@ -1,9 +1,13 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Bell, Search, Settings } from 'lucide-react'
+import { Bell, Search, Settings, LogOut, User, Zap } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { useAuth } from '@/contexts/auth-context'
 
 interface HeaderProps {
   title: string
@@ -11,6 +15,31 @@ interface HeaderProps {
 }
 
 export function Header({ title, description }: HeaderProps) {
+  const router = useRouter()
+  const { user, usage, logout } = useAuth()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    await logout()
+    router.push('/login')
+  }
+
+  // 根据套餐等级显示标签颜色
+  const tierColors: Record<string, string> = {
+    free: 'bg-slate-100 text-slate-600',
+    basic: 'bg-blue-100 text-blue-600',
+    pro: 'bg-purple-100 text-purple-600',
+    enterprise: 'bg-orange-100 text-orange-600',
+  }
+
+  const tierNames: Record<string, string> = {
+    free: '免费版',
+    basic: '基础版',
+    pro: '专业版',
+    enterprise: '企业版',
+  }
+
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between h-12 md:h-14 px-3 md:px-6">
@@ -35,6 +64,18 @@ export function Header({ title, description }: HeaderProps) {
             />
           </div>
 
+          {/* Usage Count */}
+          {user && usage && (
+            <Link href="/subscription">
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                usage.remaining > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'
+              }`}>
+                <Zap className="h-3 w-3" />
+                <span>剩余 {usage.remaining}/{usage.limit}</span>
+              </div>
+            </Link>
+          )}
+
           {/* Notification */}
           <Button variant="ghost" size="icon" className="relative h-9 w-9">
             <Bell className="h-4 w-4 text-gray-600" />
@@ -51,13 +92,39 @@ export function Header({ title, description }: HeaderProps) {
           {/* Divider */}
           <div className="hidden md:block w-px h-6 bg-gray-200" />
 
-          {/* User */}
-          <div className="hidden md:flex items-center gap-2 pl-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              客
+          {/* User Menu */}
+          {user ? (
+            <div className="hidden md:flex items-center gap-3 pl-2">
+              <div className="text-right">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${tierColors[user.subscriptionTier] || tierColors.free}`}>
+                    {tierNames[user.subscriptionTier] || '免费版'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400">{user.phone}</p>
+              </div>
+              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                {user.name.charAt(0)}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={handleLogout}
+                disabled={loggingOut}
+              >
+                <LogOut className="h-4 w-4 text-gray-500" />
+              </Button>
             </div>
-            <span className="text-sm font-medium text-gray-700">客服小橙</span>
-          </div>
+          ) : (
+            <Link href="/login">
+              <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600">
+                <User className="h-4 w-4 mr-1" />
+                登录
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
