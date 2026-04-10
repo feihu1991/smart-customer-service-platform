@@ -22,6 +22,7 @@ interface Review {
 
 export function ReviewView() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [totalReviews, setTotalReviews] = useState(0)
   const [loading, setLoading] = useState(true)
   const [filterRating, setFilterRating] = useState<number | null>(null)
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null)
@@ -34,7 +35,13 @@ export function ReviewView() {
     if (sentiment) params.set('sentiment', sentiment)
     fetch(`/api/reviews?${params}`)
       .then(res => res.json())
-      .then(setReviews)
+      .then(data => {
+        if (data.success) {
+          setReviews(data.data)
+          setTotalReviews(data.pagination?.total || data.data.length)
+        }
+      })
+      .catch(() => setReviews([]))
       .finally(() => setLoading(false))
   }, [])
 
@@ -145,7 +152,7 @@ export function ReviewView() {
 
               {/* Count */}
               <div className="ml-auto text-sm text-muted-foreground">
-                共 {reviews.length} 条评价
+                共 {totalReviews || reviews.length} 条评价
               </div>
             </div>
           </CardContent>

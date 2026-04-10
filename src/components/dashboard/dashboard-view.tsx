@@ -28,7 +28,10 @@ export function DashboardView() {
   useEffect(() => {
     fetch('/api/analytics')
       .then(res => res.json())
-      .then(setData)
+      .then(result => {
+        if (result.success) setData(result.data)
+      })
+      .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
@@ -225,6 +228,7 @@ export function DashboardView() {
             {data.categories.map((cat) => {
               const maxCount = Math.max(...data.categories.map(c => c.count), 1)
               const pct = Math.round((cat.count / maxCount) * 100)
+              const colorIndex = data.categories.indexOf(cat)
               const colors = ['bg-orange-500', 'bg-amber-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500']
               return (
                 <div key={cat.name} className="space-y-1">
@@ -234,7 +238,7 @@ export function DashboardView() {
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full ${colors[Math.floor(Math.random() * colors.length)]} transition-all duration-700`}
+                      className={`h-full rounded-full ${colors[colorIndex % colors.length]} transition-all duration-700`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>

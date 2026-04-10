@@ -48,10 +48,13 @@ export function ChatView() {
   useEffect(() => {
     fetch('/api/chat')
       .then(res => res.json())
-      .then(data => {
-        setSessions(data)
-        if (data.length > 0) setActiveSession(data[0])
+      .then(result => {
+        if (result.success) {
+          setSessions(result.data)
+          if (result.data.length > 0) setActiveSession(result.data[0])
+        }
       })
+      .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
@@ -59,62 +62,105 @@ export function ChatView() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [activeSession?.messages])
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!messageInput.trim() || !activeSession) return
 
-    const newMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'cs',
-      content: messageInput,
+    const content = messageInput
+    setMessageInput('')
+
+    // Optimistically add message to UI
+    const optimisticMsg: ChatMessage = {
+      id: crypto.randomUUID(),
+      sender: 'customer_service',
+      content,
       type: 'text',
       createdAt: new Date().toISOString(),
     }
-
     const updatedSession = {
       ...activeSession,
-      messages: [...activeSession.messages, newMsg],
+      messages: [...activeSession.messages, optimisticMsg],
     }
     setActiveSession(updatedSession)
     setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s))
-    setMessageInput('')
+
+    try {
+      const res = await fetch(`/api/chats/${activeSession.id}/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, sender: 'customer_service' }),
+      })
+      if (!res.ok) return
+    } catch {
+      // Silent fail - message already shown optimistically
+    }
   }
 
   const handleAiReply = async () => {
     if (!activeSession) return
     setSendingAi(true)
 
-    // Simulate AI generating a reply
-    await new Promise(resolve => setTimeout(resolve, 800))
-
-    const lastBuyerMsg = [...activeSession.messages].reverse().find(m => m.sender === 'buyer')
-    const context = lastBuyerMsg?.content || ''
-    let reply = aiReplies.default
-
-    if (context.includes('物流') || context.includes('快递') || context.includes('发货')) {
-      reply = aiReplies.shipping
-    } else if (context.includes('退') || context.includes('换')) {
-      reply = aiReplies.return
-    } else if (context.includes('质量') || context.includes('问题') || context.includes('坏了')) {
-      reply = aiReplies.quality
-    } else if (context.includes('码') || context.includes('尺码') || context.includes('大小')) {
-      reply = aiReplies.size
-    }
-
-    const aiMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'cs',
-      content: `🤖 [AI生成] ${reply}`,
+    // Add a loading message
+    const loadingMsg: ChatMessage = {
+      id: crypto.randomUUID(),
+      sender: 'customer_service',
+      content: '🤖 AI正在思考中...',
       type: 'text',
       createdAt: new Date().toISOString(),
     }
-
-    const updatedSession = {
+    let updatedSession = {
       ...activeSession,
-      messages: [...activeSession.messages, aiMsg],
+      messages: [...activeSession.messages, loadingMsg],
     }
     setActiveSession(updatedSession)
-    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s))
-    setSendingAi(false)
+
+    try {
+      const res = await fetch(`/api/chats/${activeSession.id}/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: '请根据对话上下文生成合适的回复', sender: 'ai' }),
+      })
+      const data = await res.json()
+      if (data.success && data.data) {
+        const aiMsg: ChatMessage = {
+          id: crypto.randomUUID(),
+          sender: 'customer_service',
+          content: `🤖 [AI生成] ${data.data.content || data.data}`,
+          type: 'text',
+          createdAt: new Date().toISOString(),
+        }
+        updatedSession = {
+          ...activeSession,
+          messages: [...activeSession.messages, aiMsg],
+        }
+        setActiveSession(updatedSession)
+        setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s))
+      }
+    } catch {
+      // Fallback to local simulation
+      const lastBuyerMsg = [...activeSession.messages].reverse().find(m => m.sender === 'customer')
+      const context = lastBuyerMsg?.content || ''
+      let reply = aiReplies.default
+      if (context.includes('物流') || context.includes('快递') || context.includes('发货')) reply = aiReplies.shipping
+      else if (context.includes('退') || context.includes('换')) reply = aiReplies.return
+      else if (context.includes('质量') || context.includes('问题') || context.includes('坏了')) reply = aiReplies.quality
+      else if (context.includes('码') || context.includes('尺码') || context.includes('大小')) reply = aiReplies.size
+
+      const aiMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        sender: 'customer_service',
+        content: `🤖 [AI生成] ${reply}`,
+        type: 'text',
+        createdAt: new Date().toISOString(),
+      }
+      updatedSession = {
+        ...activeSession,
+        messages: [...activeSession.messages, aiMsg],
+      }
+      setActiveSession(updatedSession)
+      setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s))
+    } finally {
+      setSendingAi(false)
+    }
   }
 
   const filteredSessions = sessions.filter(s =>
@@ -247,23 +293,23 @@ export function ChatView() {
                 </div>
 
                 {activeSession.messages.map((msg) => (
-                  <div key={msg.id} className={`flex gap-2.5 ${msg.sender === 'cs' ? 'flex-row-reverse' : ''}`}>
+                  <div key={msg.id} className={`flex gap-2.5 ${msg.sender === 'customer_service' ? 'flex-row-reverse' : ''}`}>
                     {/* Avatar */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
-                      msg.sender === 'buyer'
+                      msg.sender === 'customer'
                         ? 'bg-gray-200 text-gray-600'
                         : 'bg-orange-500 text-white'
                     }`}>
-                      {msg.sender === 'buyer' ? (
+                      {msg.sender === 'customer' ? (
                         <User className="h-4 w-4" />
                       ) : (
                         <Bot className="h-4 w-4" />
                       )}
                     </div>
                     {/* Bubble */}
-                    <div className={`max-w-[70%] ${msg.sender === 'cs' ? 'text-right' : ''}`}>
+                    <div className={`max-w-[70%] ${msg.sender === 'customer_service' ? 'text-right' : ''}`}>
                       <div className={`inline-block px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                        msg.sender === 'buyer'
+                        msg.sender === 'customer'
                           ? 'bg-gray-100 text-gray-800 rounded-tl-sm'
                           : msg.content.startsWith('🤖')
                             ? 'bg-gradient-to-r from-orange-50 to-amber-50 text-gray-800 border border-orange-200 rounded-tr-sm'
@@ -271,7 +317,7 @@ export function ChatView() {
                       }`}>
                         {msg.content}
                       </div>
-                      <p className={`text-[10px] text-gray-400 mt-1 ${msg.sender === 'cs' ? 'text-right' : ''}`}>
+                      <p className={`text-[10px] text-gray-400 mt-1 ${msg.sender === 'customer_service' ? 'text-right' : ''}`}>
                         {formatMsgTime(msg.createdAt)}
                       </p>
                     </div>

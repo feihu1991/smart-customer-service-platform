@@ -27,7 +27,7 @@ export default function Home() {
     fetch('/api/seed', { method: 'POST' })
       .then(res => res.json())
       .then(data => {
-        if (data.seeded) setSeeded(true)
+        if (data.success) setSeeded(true)
       })
       .catch(() => {})
   }, [])

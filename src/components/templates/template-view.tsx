@@ -57,7 +57,10 @@ export function TemplateView() {
     if (category !== 'all') params.set('category', category)
     fetch(`/api/templates?${params}`)
       .then(res => res.json())
-      .then(setTemplates)
+      .then(data => {
+        if (data.success) setTemplates(data.data)
+      })
+      .catch(() => setTemplates([]))
       .finally(() => setLoading(false))
   }, [])
 
@@ -93,7 +96,7 @@ export function TemplateView() {
   }
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/templates?id=${id}`, { method: 'DELETE' })
+    await fetch(`/api/templates/${id}`, { method: 'DELETE' })
     refreshTemplates()
   }
 
@@ -104,10 +107,19 @@ export function TemplateView() {
 
   const handleSaveEdit = async () => {
     if (!editingTemplate) return
-    // Simulate edit - in a real app this would call a PUT endpoint
-    setEditingTemplate(null)
-    setFormData({ name: '', category: '通用', content: '' })
-    refreshTemplates()
+    setCreating(true)
+    try {
+      await fetch(`/api/templates/${editingTemplate.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      setEditingTemplate(null)
+      setFormData({ name: '', category: '通用', content: '' })
+      refreshTemplates()
+    } finally {
+      setCreating(false)
+    }
   }
 
   const filteredTemplates = templates.filter(t =>

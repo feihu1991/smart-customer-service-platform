@@ -9,8 +9,9 @@ export async function GET() {
         messages: { orderBy: { createdAt: 'asc' } },
       },
     })
-    return NextResponse.json(sessions)
+    return NextResponse.json({ success: true, data: sessions })
   } catch (error) {
-    return NextResponse.json({ error: '获取聊天失败' }, { status: 500 })
+    console.error('Get chats error:', error)
+    return NextResponse.json({ success: false, message: '获取聊天失败' }, { status: 500 })
   }
 }

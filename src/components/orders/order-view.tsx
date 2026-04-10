@@ -27,9 +27,12 @@ interface Order {
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Package }> = {
   pending: { label: '待发货', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: Clock },
+  paid: { label: '已付款', color: 'bg-cyan-100 text-cyan-700 border-cyan-200', icon: Package },
   shipped: { label: '已发货', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: Truck },
+  delivered: { label: '已送达', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: Package },
   completed: { label: '已完成', color: 'bg-green-100 text-green-700 border-green-200', icon: CheckCircle },
   refunding: { label: '退款中', color: 'bg-red-100 text-red-700 border-red-200', icon: AlertCircle },
+  refunded: { label: '已退款', color: 'bg-gray-100 text-gray-700 border-gray-200', icon: AlertCircle },
 }
 
 const statusTabs = [
@@ -38,6 +41,7 @@ const statusTabs = [
   { key: 'shipped', label: '已发货' },
   { key: 'completed', label: '已完成' },
   { key: 'refunding', label: '退款中' },
+  { key: 'refunded', label: '已退款' },
 ]
 
 const logisticsSteps = [
@@ -50,6 +54,7 @@ const logisticsSteps = [
 
 export function OrderView() {
   const [orders, setOrders] = useState<Order[]>([])
+  const [totalOrders, setTotalOrders] = useState(0)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('all')
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
@@ -59,7 +64,13 @@ export function OrderView() {
     if (status !== 'all') params.set('status', status)
     fetch(`/api/orders?${params}`)
       .then(res => res.json())
-      .then(setOrders)
+      .then(data => {
+        if (data.success) {
+          setOrders(data.data)
+          setTotalOrders(data.pagination?.total || data.data.length)
+        }
+      })
+      .catch(() => setOrders([]))
       .finally(() => setLoading(false))
   }, [])
 
@@ -96,7 +107,7 @@ export function OrderView() {
               </Button>
             ))}
             <div className="ml-auto text-sm text-muted-foreground">
-              共 {orders.length} 笔
+              共 {totalOrders || orders.length} 笔
             </div>
           </div>
         </CardContent>
