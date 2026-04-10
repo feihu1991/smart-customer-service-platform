@@ -181,3 +181,23 @@ model ReplyTemplate {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+// 订阅套餐（可配置的套餐定义）
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  tier          SubscriptionTier @unique  // 关联枚举：free, basic, pro, enterprise
+  name          String   // 套餐名称
+  description   String?  // 套餐描述
+  price         Float    @default(0)  // 价格（元/月）
+  priceYearly   Float?   // 年付价格（元/年）
+  dailyLimit    Int      @default(3)  // 每日AI回复次数限制
+  shopLimit     Int      @default(1)  // 店铺数量限制
+  aiReplyLimit  Int      @default(3)  // AI回复次数（-1表示无限）
+  templateLimit Int      @default(10) // 可用模板数量
+  features      String   // JSON格式的功能列表
+  limits        String?  // JSON格式的其他限制
+  isActive      Boolean  @default(true)  // 是否启用
+  sortOrder     Int      @default(0)  // 排序顺序
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
