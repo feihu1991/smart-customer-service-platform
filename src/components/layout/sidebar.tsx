@@ -137,12 +137,12 @@ export function Sidebar({ activeView, onViewChange, unreadCounts }: SidebarProps
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden fixed top-3 left-3 z-50 bg-slate-900 text-white hover:bg-slate-800"
+            className="lg:hidden fixed top-2 left-2 z-50 bg-slate-900 text-white hover:bg-slate-800 h-8 w-8"
           >
             <LayoutDashboard className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-[260px] bg-slate-900 border-slate-700">
+        <SheetContent side="left" className="p-0 w-[260px] bg-slate-900 border-slate-700 pt-[env(safe-area-inset-top)]">
           <SidebarContent activeView={activeView} onViewChange={onViewChange} unreadCounts={unreadCounts} />
         </SheetContent>
       </Sheet>

@@ -98,22 +98,22 @@ export function ReviewView() {
 
   return (
     <>
-      <div className="p-6 space-y-4">
+      <div className="p-3 sm:p-6 space-y-4">
         {/* Filter Bar */}
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               {/* Rating Filter */}
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">评分：</span>
-                <div className="flex gap-1">
+              <div className="flex items-center gap-1.5">
+                <Filter className="h-4 w-4 text-gray-400 shrink-0" />
+                <span className="text-sm text-gray-600 shrink-0">评分：</span>
+                <div className="flex gap-1 overflow-x-auto">
                   {[null, 1, 2, 3, 4, 5].map(r => (
                     <Button
                       key={r}
                       variant={filterRating === r ? 'default' : 'outline'}
                       size="sm"
-                      className={`h-7 text-xs ${filterRating === r ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
+                      className={`h-7 text-xs whitespace-nowrap shrink-0 ${filterRating === r ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                       onClick={() => handleFilterRating(r)}
                     >
                       {r === null ? '全部' : (
@@ -130,7 +130,7 @@ export function ReviewView() {
               {/* Sentiment Filter */}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">情感：</span>
-                <div className="flex gap-1">
+                <div className="flex gap-1 overflow-x-auto">
                   {[
                     { key: null, label: '全部' },
                     { key: 'positive', label: '好评' },
@@ -141,7 +141,7 @@ export function ReviewView() {
                       key={s.key}
                       variant={filterSentiment === s.key ? 'default' : 'outline'}
                       size="sm"
-                      className={`h-7 text-xs ${filterSentiment === s.key ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
+                      className={`h-7 text-xs whitespace-nowrap shrink-0 ${filterSentiment === s.key ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                       onClick={() => handleFilterSentiment(s.key)}
                     >
                       {s.label}

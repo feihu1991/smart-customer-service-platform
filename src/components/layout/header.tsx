@@ -13,11 +13,11 @@ interface HeaderProps {
 export function Header({ title, description }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between h-14 px-4 md:px-6">
+      <div className="flex items-center justify-between h-12 md:h-14 px-3 md:px-6">
         {/* Left */}
-        <div className="flex items-center gap-4 ml-10 lg:ml-0">
+        <div className="flex items-center gap-3 md:gap-4 ml-10 md:ml-0">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+            <h2 className="text-base md:text-lg font-semibold text-gray-900">{title}</h2>
             {description && (
               <p className="text-sm text-gray-500 hidden md:block">{description}</p>
             )}

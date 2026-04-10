@@ -90,7 +90,7 @@ export function OrderView() {
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-3 sm:p-6 space-y-4">
       {/* Status Tabs */}
       <Card>
         <CardContent className="p-4">

@@ -37,7 +37,7 @@ export function DashboardView() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-32 rounded-xl" />
@@ -49,7 +49,7 @@ export function DashboardView() {
     )
   }
 
-  if (!data) return <div className="p-6 text-center text-muted-foreground">加载数据失败</div>
+  if (!data) return <div className="p-3 sm:p-6 text-center text-muted-foreground">加载数据失败</div>
 
   const maxTrend = Math.max(...data.trendData.map(d => d.count), 1)
 
@@ -116,7 +116,7 @@ export function DashboardView() {
                 </div>
               </div>
               {/* Chart */}
-              <div className="flex items-end gap-2 h-40">
+              <div className="flex items-end gap-2 h-32 sm:h-40">
                 {data.trendData.map((d, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className="w-full flex flex-col items-center gap-0.5 h-32">

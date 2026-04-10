@@ -48,7 +48,7 @@ export function AnalyticsView() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         <Skeleton className="h-10 w-64" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
@@ -59,12 +59,12 @@ export function AnalyticsView() {
     )
   }
 
-  if (!data) return <div className="p-6 text-center text-muted-foreground">加载数据失败</div>
+  if (!data) return <div className="p-3 sm:p-6 text-center text-muted-foreground">加载数据失败</div>
 
   const periodLabels: Record<Period, string> = { '7': '7天', '30': '30天', '90': '90天' }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Period Selector */}
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">统计周期：</span>
