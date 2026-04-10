@@ -1,0 +1,45 @@
+{
+  "name": "智能客服平台",
+  "short_name": "智能客服",
+  "description": "AI驱动的电商智能客服系统，高效处理评价管理和实时聊天",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "评价管理",
+      "short_name": "评价",
+      "description": "查看和管理商品评价",
+      "url": "/?view=reviews",
+      "icons": [{ "src": "/icons/reviews.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "实时聊天",
+      "short_name": "聊天",
+      "description": "与买家进行实时沟通",
+      "url": "/?view=chat",
+      "icons": [{ "src": "/icons/chat.png", "sizes": "96x96" }]
+    }
+  ]
+}

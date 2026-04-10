@@ -9,6 +9,8 @@ import { ReviewView } from '@/components/reviews/review-view'
 import { OrderView } from '@/components/orders/order-view'
 import { TemplateView } from '@/components/templates/template-view'
 import { AnalyticsView } from '@/components/analytics/analytics-view'
+import { Menu } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const viewConfig: Record<ViewType, { title: string; description: string }> = {
   dashboard: { title: '工作台', description: '总览店铺客服运营数据' },
@@ -22,6 +24,7 @@ const viewConfig: Record<ViewType, { title: string; description: string }> = {
 export default function Home() {
   const [activeView, setActiveView] = useState<ViewType>('dashboard')
   const [seeded, setSeeded] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/seed', { method: 'POST' })

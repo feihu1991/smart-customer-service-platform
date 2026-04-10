@@ -41,10 +41,10 @@ export function Header({ title, description }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between h-12 md:h-14 px-3 md:px-6">
+    <header className="sticky top-0 z-30 bg-white border-b border-gray-200 hidden lg:block">
+      <div className="flex items-center justify-between h-12 md:h-14 px-4 md:px-6">
         {/* Left */}
-        <div className="flex items-center gap-3 md:gap-4 ml-10 md:ml-0">
+        <div className="flex items-center gap-3 md:gap-4">
           <div>
             <h2 className="text-base md:text-lg font-semibold text-gray-900">{title}</h2>
             {description && (
@@ -54,7 +54,7 @@ export function Header({ title, description }: HeaderProps) {
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           {/* Search */}
           <div className="relative hidden md:block">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -67,17 +67,18 @@ export function Header({ title, description }: HeaderProps) {
           {/* Usage Count */}
           {user && usage && (
             <Link href="/subscription">
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium touch-manipulation ${
                 usage.remaining > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'
               }`}>
                 <Zap className="h-3 w-3" />
-                <span>剩余 {usage.remaining}/{usage.limit}</span>
+                <span className="hidden sm:inline">剩余 {usage.remaining}/{usage.limit}</span>
+                <span className="sm:hidden">{usage.remaining}</span>
               </div>
             </Link>
           )}
 
           {/* Notification */}
-          <Button variant="ghost" size="icon" className="relative h-9 w-9">
+          <Button variant="ghost" size="icon" className="relative h-9 w-9 touch-manipulation">
             <Bell className="h-4 w-4 text-gray-600" />
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
               3
@@ -85,7 +86,7 @@ export function Header({ title, description }: HeaderProps) {
           </Button>
 
           {/* Settings */}
-          <Button variant="ghost" size="icon" className="h-9 w-9">
+          <Button variant="ghost" size="icon" className="h-9 w-9 touch-manipulation">
             <Settings className="h-4 w-4 text-gray-600" />
           </Button>
 
@@ -110,7 +111,7 @@ export function Header({ title, description }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 touch-manipulation"
                 onClick={handleLogout}
                 disabled={loggingOut}
               >
@@ -119,7 +120,7 @@ export function Header({ title, description }: HeaderProps) {
             </div>
           ) : (
             <Link href="/login">
-              <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600">
+              <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 touch-manipulation">
                 <User className="h-4 w-4 mr-1" />
                 登录
               </Button>

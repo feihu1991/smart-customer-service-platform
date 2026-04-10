@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { 
   LayoutDashboard, MessageCircle, Star, Package, 
   FileText, BarChart3, ChevronLeft, ChevronRight,
-  Store
+  Store, X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { 
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export type ViewType = 'dashboard' | 'chat' | 'reviews' | 'orders' | 'templates' | 'analytics'
 
@@ -20,6 +20,8 @@ interface SidebarProps {
   activeView: ViewType
   onViewChange: (view: ViewType) => void
   unreadCounts?: Record<string, number>
+  mobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
 const navItems: { id: ViewType; label: string; icon: typeof LayoutDashboard }[] = [
