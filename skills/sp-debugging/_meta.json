@@ -1,0 +1,7 @@
+{
+  "name": "sp-debugging",
+  "slug": "debug",
+  "version": "1.0.0",
+  "description": "系统化调试 - 四阶段根因分析，拒绝盲目试错",
+  "metadata": {}
+}
