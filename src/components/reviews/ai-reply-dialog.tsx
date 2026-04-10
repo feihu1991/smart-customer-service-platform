@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { 
   Star, Sparkles, Check, Copy, Edit3, Send, 
-  Eye, GitCompare, ThumbsUp, Clock, RotateCcw
+  Eye, GitCompare, ThumbsUp, Clock, RotateCcw,
+  BookmarkPlus, Bookmark, Diff, Save, X
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -43,6 +52,13 @@ interface AiReplyOption {
 
 interface CopyState {
   [key: string]: boolean
+}
+
+// 差异行类型
+interface DiffLine {
+  type: 'unchanged' | 'added' | 'removed'
+  content: string
+  lineNumber?: number
 }
 
 const fallbackReplies: AiReplyOption[] = [
@@ -75,11 +91,40 @@ const fallbackReplies: AiReplyOption[] = [
   },
 ]
 
+// 计算两个字符串的差异
+function computeDiff(original: string, edited: string): DiffLine[] {
+  const originalLines = original.split('\n')
+  const editedLines = edited.split('\n')
+  const result: DiffLine[] = []
+  
+  // 简单的行对比
+  const maxLines = Math.max(originalLines.length, editedLines.length)
+  
+  for (let i = 0; i < maxLines; i++) {
+    const origLine = originalLines[i] ?? ''
+    const editLine = editedLines[i] ?? ''
+    
+    if (origLine === editLine) {
+      result.push({ type: 'unchanged', content: origLine, lineNumber: i + 1 })
+    } else {
+      if (origLine && !editedLines.includes(origLine)) {
+        result.push({ type: 'removed', content: origLine, lineNumber: i + 1 })
+      }
+      if (editLine && !originalLines.includes(editLine)) {
+        result.push({ type: 'added', content: editLine, lineNumber: i + 1 })
+      }
+    }
+  }
+  
+  return result
+}
+
 export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogProps) {
   const [replies, setReplies] = useState<AiReplyOption[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedReply, setSelectedReply] = useState<AiReplyOption | null>(null)
   const [editedContent, setEditedContent] = useState('')
+  const [originalContent, setOriginalContent] = useState('') // 保存原始内容用于对比
   const [isEditing, setIsEditing] = useState(false)
   const [sending, setSending] = useState(false)
   const [activeTab, setActiveTab] = useState('options')
@@ -90,6 +135,23 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
   // 对比模式
   const [compareMode, setCompareMode] = useState(false)
   const [compareReplies, setCompareReplies] = useState<AiReplyOption[]>([])
+  
+  // 版本对比模式
+  const [versionCompareMode, setVersionCompareMode] = useState(false)
+  
+  // 保存模板相关
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [saveDialogLoading, setSaveDialogLoading] = useState(false)
+  const [templateForm, setTemplateForm] = useState({
+    name: '',
+    category: 'mixed',
+  })
+
+  // 计算差异
+  const diffLines = useMemo(() => {
+    if (!originalContent) return []
+    return computeDiff(originalContent, editedContent)
+  }, [originalContent, editedContent])
 
   // Load AI replies when dialog opens
   useEffect(() => {
@@ -97,8 +159,11 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
       setLoading(true)
       setSelectedReply(null)
       setEditedContent('')
+      setOriginalContent('')
       setCompareMode(false)
       setCompareReplies([])
+      setVersionCompareMode(false)
+      setShowSaveDialog(false)
       
       fetch(`/api/reviews/${review.id}/reply`, {
         method: 'POST',
@@ -130,8 +195,10 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
   const handleSelect = (reply: AiReplyOption) => {
     setSelectedReply(reply)
     setEditedContent(reply.content)
+    setOriginalContent(reply.content) // 保存原始内容
     setIsEditing(false)
     setActiveTab('edit')
+    setVersionCompareMode(false)
   }
 
   // 复制到剪贴板
@@ -175,6 +242,54 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
     setCompareMode(!compareMode)
   }
 
+  // 切换版本对比模式
+  const toggleVersionCompare = () => {
+    setVersionCompareMode(!versionCompareMode)
+  }
+
+  // 恢复原始版本
+  const handleRestoreOriginal = () => {
+    if (selectedReply) {
+      setEditedContent(selectedReply.content)
+      setVersionCompareMode(false)
+      toast.success('已恢复原始版本')
+    }
+  }
+
+  // 保存到模板
+  const handleSaveToTemplate = async () => {
+    if (!templateForm.name.trim() || !editedContent.trim()) {
+      toast.error('请填写模板名称')
+      return
+    }
+    
+    setSaveDialogLoading(true)
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: templateForm.name,
+          category: templateForm.category,
+          content: editedContent,
+        }),
+      })
+      const data = await res.json()
+      
+      if (data.success) {
+        toast.success('已保存到个人模板库')
+        setShowSaveDialog(false)
+        setTemplateForm({ name: '', category: 'mixed' })
+      } else {
+        toast.error(data.message || '保存失败')
+      }
+    } catch {
+      toast.error('保存失败，请重试')
+    } finally {
+      setSaveDialogLoading(false)
+    }
+  }
+
   // 回复评分星级显示
   const renderScoreStars = (score: number) => {
     const stars = Math.ceil(score / 20)
@@ -188,6 +303,26 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
         ))}
       </div>
     )
+  }
+
+  // 渲染差异行
+  const renderDiffLines = () => {
+    return diffLines.map((line, index) => {
+      const bgClass = line.type === 'added' 
+        ? 'bg-green-50 border-l-2 border-green-500' 
+        : line.type === 'removed' 
+          ? 'bg-red-50 border-l-2 border-red-500 line-through opacity-60'
+          : 'bg-gray-50'
+      
+      const prefix = line.type === 'added' ? '+ ' : line.type === 'removed' ? '- ' : '  '
+      
+      return (
+        <div key={index} className={cn('px-2 py-0.5 text-sm font-mono', bgClass)}>
+          <span className="select-none">{prefix}</span>
+          {line.content || '\u00A0'}
+        </div>
+      )
+    })
   }
 
   const handleSend = async () => {
@@ -228,6 +363,9 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
 
   const sentimentColor = review.sentiment === 'negative' ? 'text-red-500' : review.sentiment === 'positive' ? 'text-green-500' : 'text-gray-500'
   const sentimentLabel = review.sentiment === 'negative' ? '差评' : review.sentiment === 'positive' ? '好评' : '中评'
+
+  // 检查是否有修改
+  const hasChanges = originalContent !== editedContent
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -477,25 +615,52 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
                           <Sparkles className="h-3 w-3" />
                           质量评分 {selectedReply.score}
                         </div>
+                        {hasChanges && (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                            <Diff className="h-3 w-3 mr-1" />
+                            已修改
+                          </Badge>
+                        )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={() => {
-                          setEditedContent(selectedReply.content)
-                          setIsEditing(false)
-                        }}
-                      >
-                        <RotateCcw className="h-3 w-3 mr-1" />
-                        重置
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => setShowSaveDialog(true)}
+                          disabled={!editedContent.trim()}
+                        >
+                          <BookmarkPlus className="h-3 w-3 mr-1" />
+                          收藏
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={handleRestoreOriginal}
+                          disabled={!hasChanges}
+                        >
+                          <RotateCcw className="h-3 w-3 mr-1" />
+                          重置
+                        </Button>
+                      </div>
                     </div>
                     
-                    {/* Edit/Preview Toggle */}
+                    {/* Edit/Preview/Compare Toggle */}
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-gray-700">回复内容</p>
                       <div className="flex items-center gap-2">
+                        {hasChanges && (
+                          <Button
+                            variant={versionCompareMode ? 'default' : 'outline'}
+                            size="sm"
+                            className={cn('h-7 text-xs', versionCompareMode ? 'bg-blue-500' : '')}
+                            onClick={toggleVersionCompare}
+                          >
+                            <Diff className="h-3 w-3 mr-1" />
+                            版本对比
+                          </Button>
+                        )}
                         <Button
                           variant={isEditing ? 'ghost' : 'secondary'}
                           size="sm"
@@ -538,30 +703,73 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
                       </div>
                     </div>
                     
-                    {isEditing ? (
-                      <Textarea
-                        value={editedContent}
-                        onChange={e => setEditedContent(e.target.value)}
-                        rows={6}
-                        className="text-sm"
-                        placeholder="编辑回复内容..."
-                      />
+                    {versionCompareMode ? (
+                      // 版本对比视图
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs text-gray-500 px-2">
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-red-50 border-l-2 border-red-500 rounded"></span>
+                            <span>原始版本</span>
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-green-50 border-l-2 border-green-500 rounded"></span>
+                            <span>修改后</span>
+                          </span>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden bg-white max-h-[300px] overflow-y-auto">
+                          <div className="bg-gray-100 px-3 py-2 border-b text-xs font-medium text-gray-600">
+                            差异对比
+                          </div>
+                          <div className="font-mono text-sm">
+                            {renderDiffLines()}
+                          </div>
+                        </div>
+                      </div>
+                    ) : isEditing ? (
+                      // 编辑模式
+                      <div className="space-y-2">
+                        <Textarea
+                          value={editedContent}
+                          onChange={e => setEditedContent(e.target.value)}
+                          rows={8}
+                          className="text-sm resize-none"
+                          placeholder="编辑回复内容..."
+                        />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <span>字数：{editedContent.length}</span>
+                            {hasChanges && (
+                              <span className="text-blue-600">
+                                修改 +{editedContent.length - originalContent.length} 字
+                              </span>
+                            )}
+                          </div>
+                          {editedContent.length > 200 && (
+                            <Badge variant="outline" className="text-amber-600 bg-amber-50">
+                              内容较长，建议分段发送
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
                     ) : (
-                      <div className="p-4 bg-gray-50 rounded-lg border min-h-[120px]">
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                          {editedContent}
-                        </p>
+                      // 预览模式
+                      <div className="space-y-2">
+                        <div className="p-4 bg-gray-50 rounded-lg border min-h-[120px]">
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                            {editedContent}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>字数：{editedContent.length}</span>
+                          {hasChanges && (
+                            <Badge variant="outline" className="text-blue-600 bg-blue-50">
+                              <Diff className="h-3 w-3 mr-1" />
+                              较原始版本有修改
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     )}
-                    
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>字数：{editedContent.length}</span>
-                      {editedContent.length > 200 && (
-                        <Badge variant="outline" className="text-amber-600 bg-amber-50">
-                          内容较长，建议分段发送
-                        </Badge>
-                      )}
-                    </div>
                     
                     <div className="flex justify-end gap-2 pt-2">
                       <Button variant="outline" onClick={onClose}>取消</Button>
@@ -579,6 +787,91 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
               </TabsContent>
             </Tabs>
           </>
+        )}
+
+        {/* Save to Template Dialog */}
+        {showSaveDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <BookmarkPlus className="h-5 w-5 text-orange-500" />
+                    保存到模板库
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowSaveDialog(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      模板名称 <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      value={templateForm.name}
+                      onChange={e => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="例如：物流延迟道歉模板"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      模板分类
+                    </label>
+                    <Select
+                      value={templateForm.category}
+                      onValueChange={value => setTemplateForm(prev => ({ ...prev, category: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="quality">质量问题</SelectItem>
+                        <SelectItem value="logistics">物流问题</SelectItem>
+                        <SelectItem value="service">服务态度</SelectItem>
+                        <SelectItem value="expectation">描述不符</SelectItem>
+                        <SelectItem value="mixed">综合问题</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      模板内容预览
+                    </label>
+                    <div className="p-3 bg-gray-50 rounded-lg border text-sm text-gray-600 max-h-32 overflow-y-auto">
+                      {editedContent.length > 200 
+                        ? editedContent.substring(0, 200) + '...' 
+                        : editedContent}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      共 {editedContent.length} 字
+                    </p>
+                  </div>
+                  
+                  <div className="flex justify-end gap-2 pt-2">
+                    <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                      取消
+                    </Button>
+                    <Button
+                      className="bg-orange-500 hover:bg-orange-600"
+                      onClick={handleSaveToTemplate}
+                      disabled={saveDialogLoading || !templateForm.name.trim()}
+                    >
+                      <Save className="h-4 w-4 mr-1" />
+                      {saveDialogLoading ? '保存中...' : '保存'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </DialogContent>
     </Dialog>
