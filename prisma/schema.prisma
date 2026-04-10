@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// 店铺
+model Shop {
+  id           String        @id @default(cuid())
+  name         String
+  platform     String        @default("taobao")
+  logo         String?
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  reviews      Review[]
+  orders       Order[]
+  chatSessions ChatSession[]
+  products     Product[]
 }
 
-model Post {
+// 商品
+model Product {
   id        String   @id @default(cuid())
+  shopId    String
   title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  imageUrl  String?
+  price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  reviews   Review[]
+  orders    Order[]
+  shop      Shop     @relation(fields: [shopId], references: [id])
+}
+
+// 评价
+model Review {
+  id          String        @id @default(cuid())
+  shopId      String
+  productId   String
+  orderId     String?
+  buyerName   String
+  buyerAvatar String?
+  rating      Int
+  content     String
+  images      String?
+  sentiment   String        @default("neutral")
+  category    String?
+  replyStatus String        @default("pending")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  replies     ReviewReply[]
+  shop        Shop          @relation(fields: [shopId], references: [id])
+  product     Product       @relation(fields: [productId], references: [id])
+}
+
+// 评价回复
+model ReviewReply {
+  id        String   @id @default(cuid())
+  reviewId  String
+  content   String
+  type      String   @default("ai_generated")
+  isSent    Boolean  @default(false)
+  aiScore   Float?
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+// 订单
+model Order {
+  id               String   @id @default(cuid())
+  shopId           String
+  productId        String
+  orderNo          String   @unique
+  buyerName        String
+  buyerPhone       String?
+  amount           Float
+  status           String   @default("pending")
+  address          String?
+  logisticsNo      String?
+  logisticsCompany String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  shop             Shop     @relation(fields: [shopId], references: [id])
+  product          Product  @relation(fields: [productId], references: [id])
+}
+
+// 聊天会话
+model ChatSession {
+  id          String        @id @default(cuid())
+  shopId      String
+  buyerName   String
+  buyerAvatar String?
+  status      String        @default("active")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+  shop        Shop          @relation(fields: [shopId], references: [id])
+}
+
+// 聊天消息
+model ChatMessage {
+  id        String       @id @default(cuid())
+  sessionId String
+  sender    String
+  content   String
+  type      String       @default("text")
+  createdAt DateTime     @default(now())
+  session   ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+// 回复模板
+model ReplyTemplate {
+  id         String   @id @default(cuid())
+  name       String
+  category   String
+  content    String
+  usageCount Int      @default(0)
+  isBuiltIn  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
