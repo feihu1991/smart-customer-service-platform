@@ -1,0 +1,92 @@
+[
+  {
+    "url": "https://openrouter.ai/xiaomi/mimo-v2-pro/benchmarks",
+    "name": "Xiaomi: MiMo-V2-Pro – Benchmarks",
+    "snippet": "Mar 18, 2026 — It ranks among the global top tier in the standard PinchBench and ClawBench benchmarks, with perceived performance approaching that of Opus 4.6.",
+    "host_name": "openrouter.ai",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openrouter.ai/xiaomi/mimo-v2-pro",
+    "name": "MiMo-V2-Pro - API Pricing & Providers",
+    "snippet": "Mar 18, 2026 — MiMo - V2 - Pro is Xiaomi's flagship foundation model , featuring over 1T total parameters and a 1M context length, deeply optimized for agentic ...",
+    "host_name": "openrouter.ai",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openrouter.ai/compare/xiaomi/mimo-v2-pro",
+    "name": "MiMo-V2-Pro compared to other AI Models",
+    "snippet": "MiMo-V2-Pro is Xiaomi's flagship foundation model, featuring over 1T total parameters and a 1M context length, deeply optimized for agentic scenarios.",
+    "host_name": "openrouter.ai",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openrouter.ai/xiaomi/mimo-v2-pro/api",
+    "name": "Xiaomi: MiMo-V2-Pro – API Quickstart",
+    "snippet": "Mar 18, 2026 — It is a Mixture-of-Experts model with 309B total parameters and 15B active parameters , adopting hybrid attention architecture. MiMo-V2-Flash ...",
+    "host_name": "openrouter.ai",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/artificial/comments/1s1cpap/xiaomis_mimo_models_are_making_the_ai_pricing",
+    "name": "Xiaomi's MiMo models are making the AI pricing",
+    "snippet": "MiMo-V2-Pro ranks #3 globally on agent benchmarks behind Claude Opus 4.6, with a 1M token context window, at $1/$3 per million tokens. Opus ...",
+    "host_name": "www.reddit.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openrouter.ai/models",
+    "name": "Models",
+    "snippet": "MiMo-V2-Pro is Xiaomi's flagship foundation model, featuring over 1T total parameters and a 1M context length, deeply optimized for agentic scenarios. It is ...",
+    "host_name": "openrouter.ai",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.typingmind.com/guide/openrouter/mimo-v2-pro",
+    "name": "MiMo-V2-Pro via OpenRouter using API Key",
+    "snippet": "Mar 18, 2026 — It is a Mixture-of-Experts model with 309B total parameters and 15B active parameters , adopting hybrid attention architecture. MiMo-V2-Flash ...",
+    "host_name": "www.typingmind.com",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openrouter.ai/compare/xiaomi/mimo-v2-pro/z-ai/glm-5-turbo",
+    "name": "MiMo-V2-Pro vs GLM 5 Turbo - AI Model Comparison",
+    "snippet": "MiMo-V2-Pro is Xiaomi's flagship foundation model, featuring over 1T total parameters and a 1M context length, deeply optimized for agentic scenarios.",
+    "host_name": "openrouter.ai",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://venturebeat.com/technology/xiaomi-stuns-with-new-mimo-v2-pro-llm-nearing-gpt-5-2-opus-4-6-performance",
+    "name": "Xiaomi stuns with new MiMo-V2-Pro LLM nearing GPT-5.2,",
+    "snippet": "Mar 18, 2026 — MiMo - V2 - Pro utilizes a 7:1 hybrid ratio (increased from 5:1 in the Flash version) to manage its massive 1M-token context window.",
+    "host_name": "venturebeat.com",
+    "rank": 8,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.kucoin.com/news/flash/xiaomi-s-mimo-v2-pro-unveiled-as-openrouter-s-hunter-alpha-ranks-top-in-cost-effective-ai-models",
+    "name": "Xiaomi's MiMo-V2-Pro, unveiled as OpenRouter's 'Hunter",
+    "snippet": "Mar 18, 2026 — On the Artificial Analysis Intelligence Index, MiMo-V2-Pro ranks #1 among 160 models in its price tier (under $0.15 per million tokens), scoring ...",
+    "host_name": "www.kucoin.com",
+    "rank": 9,
+    "date": "",
+    "favicon": ""
+  }
+]
