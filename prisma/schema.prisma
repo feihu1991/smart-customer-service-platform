@@ -15,6 +15,14 @@ enum SubscriptionTier {
   enterprise
 }
 
+// 订阅状态枚举
+enum SubscriptionStatus {
+  active      // 有效
+  cancelled   // 已取消
+  expired     // 已过期
+  pending     // 待生效
+}
+
 // 用户
 model User {
   id                 String         @id @default(cuid())
@@ -23,6 +31,9 @@ model User {
   name               String         @default("新用户")
   avatar             String?
   subscriptionTier   SubscriptionTier @default(free)
+  planId             String?        // 当前订阅的套餐ID（关联SubscriptionPlan）
+  subscriptionStatus SubscriptionStatus @default(active) // 订阅状态
+  subscriptionExpireAt DateTime?    // 订阅到期时间
   dailyUsageCount    Int            @default(0)
   lastUsageDate      DateTime       @default(now())
   dailyLimit         Int            @default(3)       // 每日限制次数，免费用户3次
@@ -30,6 +41,7 @@ model User {
   updatedAt          DateTime       @updatedAt
   subscriptions      Subscription[]
   sessions           UserSession[]
+  shops              Shop[]
 }
 
 // 用户会话（用于JWT token管理）
@@ -61,15 +73,20 @@ model Subscription {
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// 店铺
+// 店铺（支持多店铺：每个用户可有多个店铺）
 model Shop {
   id           String        @id @default(cuid())
-  name         String
-  platform     String        @default("taobao")
+  userId       String        // 店铺所属用户ID
+  name         String        // 店铺名称
+  platform     String        @default("taobao") // 平台：taobao/jd/pdd
+  shopId       String?       // 平台店铺ID（模拟）
+  accessToken  String?       // 平台授权Token（模拟）
   logo         String?
+  status       String        @default("active") // active/inactive
   isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews      Review[]
   orders       Order[]
   chatSessions ChatSession[]
@@ -125,6 +142,7 @@ model ReviewReply {
   aiScore   Float?
   createdAt DateTime @default(now())
   review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  quality   ReplyQuality?
 }
 
 // 订单
@@ -180,6 +198,60 @@ model ReplyTemplate {
   isBuiltIn  Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// 回复质量评估
+model ReplyQuality {
+  id              String   @id @default(cuid())
+  replyId         String   @unique
+  score           Float    // 综合评分 0-100
+  relevance       Float    // 相关性 0-100
+  politeness      Float    // 礼貌度 0-100
+  professionalism Float    // 专业性 0-100
+  recoveryPotential Float  // 挽回潜力 0-100
+  isLowQuality    Boolean  @default(false) // 是否标记为低质量
+  evaluatedAt     DateTime @default(now())
+  reply           ReviewReply @relation(fields: [replyId], references: [id], onDelete: Cascade)
+}
+
+// 订阅套餐（可配置的套餐定义）
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  tier          SubscriptionTier @unique  // 关联枚举：free, basic, pro, enterprise
+  name          String   // 套餐名称
+  description   String?  // 套餐描述
+  price         Float    @default(0)  // 价格（元/月）
+  priceYearly   Float?   // 年付价格（元/年）
+  dailyLimit    Int      @default(3)  // 每日AI回复次数限制
+  shopLimit     Int      @default(1)  // 店铺数量限制
+  aiReplyLimit  Int      @default(3)  // AI回复次数（-1表示无限）
+  templateLimit Int      @default(10) // 可用模板数量
+  features      String   // JSON格式的功能列表
+  limits        String?  // JSON格式的其他限制
+  isActive      Boolean  @default(true)  // 是否启用
+  sortOrder     Int      @default(0)  // 排序顺序
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// 订阅套餐（可配置的套餐定义）
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  tier          SubscriptionTier @unique  // 关联枚举：free, basic, pro, enterprise
+  name          String   // 套餐名称
+  description   String?  // 套餐描述
+  price         Float    @default(0)  // 价格（元/月）
+  priceYearly   Float?   // 年付价格（元/年）
+  dailyLimit    Int      @default(3)  // 每日AI回复次数限制
+  shopLimit     Int      @default(1)  // 店铺数量限制
+  aiReplyLimit  Int      @default(3)  // AI回复次数（-1表示无限）
+  templateLimit Int      @default(10) // 可用模板数量
+  features      String   // JSON格式的功能列表
+  limits        String?  // JSON格式的其他限制
+  isActive      Boolean  @default(true)  // 是否启用
+  sortOrder     Int      @default(0)  // 排序顺序
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // 订阅套餐（可配置的套餐定义）

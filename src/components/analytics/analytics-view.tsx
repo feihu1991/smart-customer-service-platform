@@ -5,12 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatsCard } from '@/components/shared/stats-card'
+import { RecoveryDashboard } from './recovery-dashboard'
+import { QualityDashboard } from './quality-dashboard'
 import {
   Clock, Zap, ThumbsUp, BarChart3, TrendingUp,
-  Target, Award, Users
+  Target, Award, Users, Target as RecoveryIcon, ShieldCheck
 } from 'lucide-react'
 
 type Period = '7' | '30' | '90'
+type ViewTab = 'overview' | 'recovery' | 'quality'
 
 interface AnalyticsData {
   totalReviews: number
@@ -28,6 +31,7 @@ export function AnalyticsView() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState<Period>('7')
+  const [activeTab, setActiveTab] = useState<ViewTab>('overview')
 
   const loadData = useCallback(() => {
     fetch('/api/analytics')
@@ -49,12 +53,94 @@ export function AnalyticsView() {
   if (loading) {
     return (
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-        <Skeleton className="h-10 w-64" />
+        {/* Tab Loading */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-64" />
+          <div className="ml-auto flex gap-2">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
         </div>
         <Skeleton className="h-72 rounded-xl" />
         <Skeleton className="h-72 rounded-xl" />
+      </div>
+    )
+  }
+
+  // 如果选择的是质量监控，显示质量监控组件
+  if (activeTab === 'quality') {
+    return (
+      <div>
+        {/* Tab Header */}
+        <div className="px-3 sm:px-6 pt-3">
+          <div className="flex items-center gap-2 border-b">
+            <Button
+              variant={activeTab === 'overview' ? 'default' : 'ghost'}
+              size="sm"
+              className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              数据分析
+            </Button>
+            <Button
+              variant={activeTab === 'recovery' ? 'default' : 'ghost'}
+              size="sm"
+              className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+              onClick={() => setActiveTab('recovery')}
+            >
+              <RecoveryIcon className="h-4 w-4 mr-2" />
+              挽回效果看板
+            </Button>
+            <Button
+              variant={activeTab === 'quality' ? 'default' : 'ghost'}
+              size="sm"
+              className={`h-10 rounded-none border-b-2 ${activeTab === 'quality' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+              onClick={() => setActiveTab('quality')}
+            >
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              质量监控
+            </Button>
+          </div>
+        </div>
+        <div className="p-3 sm:p-6">
+          <QualityDashboard />
+        </div>
+      </div>
+    )
+  }
+
+  // 如果选择的是挽回效果看板，显示挽回看板组件
+  if (activeTab === 'recovery') {
+    return (
+      <div>
+        {/* Tab Header */}
+        <div className="px-3 sm:px-6 pt-3">
+          <div className="flex items-center gap-2 border-b">
+            <Button
+              variant={activeTab === 'overview' ? 'default' : 'ghost'}
+              size="sm"
+              className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              数据分析
+            </Button>
+            <Button
+              variant={activeTab === 'recovery' ? 'default' : 'ghost'}
+              size="sm"
+              className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+              onClick={() => setActiveTab('recovery')}
+            >
+              <RecoveryIcon className="h-4 w-4 mr-2" />
+              挽回效果看板
+            </Button>
+          </div>
+        </div>
+        <RecoveryDashboard />
       </div>
     )
   }
@@ -65,20 +151,53 @@ export function AnalyticsView() {
 
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Period Selector */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">统计周期：</span>
-        {(['7', '30', '90'] as Period[]).map(p => (
+      {/* Tab Selector */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2 border-b">
           <Button
-            key={p}
-            variant={period === p ? 'default' : 'outline'}
+            variant={activeTab === 'overview' ? 'default' : 'ghost'}
             size="sm"
-            className={`h-8 ${period === p ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
-            onClick={() => handlePeriodChange(p)}
+            className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+            onClick={() => setActiveTab('overview')}
           >
-            {periodLabels[p]}
+            <BarChart3 className="h-4 w-4 mr-2" />
+            数据分析
           </Button>
-        ))}
+          <Button
+            variant={activeTab === 'recovery' ? 'default' : 'ghost'}
+            size="sm"
+            className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+            onClick={() => setActiveTab('recovery')}
+          >
+            <RecoveryIcon className="h-4 w-4 mr-2" />
+            挽回效果看板
+          </Button>
+          <Button
+            variant={activeTab === 'quality' ? 'default' : 'ghost'}
+            size="sm"
+            className={`h-10 rounded-none border-b-2 ${activeTab === 'quality' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+            onClick={() => setActiveTab('quality')}
+          >
+            <ShieldCheck className="h-4 w-4 mr-2" />
+            质量监控
+          </Button>
+        </div>
+        
+        {/* Period Selector */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">统计周期：</span>
+          {(['7', '30', '90'] as Period[]).map(p => (
+            <Button
+              key={p}
+              variant={period === p ? 'default' : 'outline'}
+              size="sm"
+              className={`h-8 ${period === p ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
+              onClick={() => handlePeriodChange(p)}
+            >
+              {periodLabels[p]}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* KPI Stats */}

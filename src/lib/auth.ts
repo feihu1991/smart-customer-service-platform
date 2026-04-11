@@ -60,6 +60,9 @@ export async function verifyToken(token: string): Promise<{
     phone: string
     name: string
     subscriptionTier: string
+    planId: string | null
+    subscriptionStatus: string
+    subscriptionExpireAt: Date | null
     dailyUsageCount: number
     lastUsageDate: Date
     dailyLimit: number
@@ -74,6 +77,9 @@ export async function verifyToken(token: string): Promise<{
           phone: true,
           name: true,
           subscriptionTier: true,
+          planId: true,
+          subscriptionStatus: true,
+          subscriptionExpireAt: true,
           dailyUsageCount: true,
           lastUsageDate: true,
           dailyLimit: true,

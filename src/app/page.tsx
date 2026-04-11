@@ -9,11 +9,13 @@ import { ReviewView } from '@/components/reviews/review-view'
 import { OrderView } from '@/components/orders/order-view'
 import { TemplateView } from '@/components/templates/template-view'
 import { AnalyticsView } from '@/components/analytics/analytics-view'
+import { ShopView } from '@/components/shops/shop-view'
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const viewConfig: Record<ViewType, { title: string; description: string }> = {
   dashboard: { title: '工作台', description: '总览店铺客服运营数据' },
+  shops: { title: '店铺管理', description: '管理多个电商平台店铺' },
   chat: { title: '实时聊天', description: '与买家进行实时沟通' },
   reviews: { title: '评价管理', description: '查看和管理商品评价' },
   orders: { title: '订单管理', description: '管理店铺订单' },
@@ -41,6 +43,8 @@ export default function Home() {
     switch (activeView) {
       case 'dashboard':
         return <DashboardView />
+      case 'shops':
+        return <ShopView />
       case 'chat':
         return <ChatView />
       case 'reviews':

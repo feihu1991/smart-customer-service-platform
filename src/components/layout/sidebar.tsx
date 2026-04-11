@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useState, useEffect } from 'react'
 
-export type ViewType = 'dashboard' | 'chat' | 'reviews' | 'orders' | 'templates' | 'analytics'
+export type ViewType = 'dashboard' | 'shops' | 'chat' | 'reviews' | 'orders' | 'templates' | 'analytics'
 
 interface SidebarProps {
   activeView: ViewType
@@ -26,6 +26,7 @@ interface SidebarProps {
 
 const navItems: { id: ViewType; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: '工作台', icon: LayoutDashboard },
+  { id: 'shops', label: '店铺管理', icon: Store },
   { id: 'chat', label: '实时聊天', icon: MessageCircle },
   { id: 'reviews', label: '评价管理', icon: Star },
   { id: 'orders', label: '订单管理', icon: Package },

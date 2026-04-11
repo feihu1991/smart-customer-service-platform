@@ -22,6 +22,7 @@ interface UsageInfo {
 interface AuthContextType {
   user: User | null
   loading: boolean
+  token: string | null
   usage: UsageInfo | null
   login: (phone: string, password?: string, code?: string) => Promise<void>
   logout: () => Promise<void>
@@ -35,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [usage, setUsage] = useState<UsageInfo | null>(null)
+  const [token, setToken] = useState<string | null>(null)
 
   const refreshUser = useCallback(async () => {
     try {
@@ -42,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json()
       if (data.success) {
         setUser(data.data.user)
+        setToken(data.data.token || null)
         setUsage({
           remaining: data.data.user.dailyLimit - data.data.user.dailyUsageCount,
           limit: data.data.user.dailyLimit,
@@ -49,10 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
       } else {
         setUser(null)
+        setToken(null)
         setUsage(null)
       }
     } catch {
       setUser(null)
+      setToken(null)
       setUsage(null)
     }
   }, [])
@@ -83,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     setUser(null)
+    setToken(null)
     setUsage(null)
   }, [])
 
@@ -96,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshUser])
 
   return (
-    <AuthContext.Provider value={{ user, loading, usage, login, logout, refreshUser, refreshUsage }}>
+    <AuthContext.Provider value={{ user, loading, token, usage, login, logout, refreshUser, refreshUsage }}>
       {children}
     </AuthContext.Provider>
   )
