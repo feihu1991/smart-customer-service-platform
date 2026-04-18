@@ -48,8 +48,7 @@ export async function POST(request: NextRequest) {
       data: {
         status: 'paid',
         paidAt: new Date(),
-        alipayTradeNo: `SANDBOX_${Date.now()}`,
-        alipayBuyerLogonId: 'sandbox@example.com'
+        transactionId: `SANDBOX_${Date.now()}`
       }
     })
 
