@@ -1,7 +1,0 @@
-{
-  "name": "sp-tdd",
-  "slug": "tdd",
-  "version": "1.0.0",
-  "description": "TDD测试驱动开发 - 先写测试再写代码，红绿重构循环",
-  "metadata": {}
-}

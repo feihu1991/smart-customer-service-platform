@@ -1,7 +1,0 @@
-{
-  "name": "sp-executing-plans",
-  "slug": "exec-plan",
-  "version": "1.0.0",
-  "description": "执行计划技能 - 按任务批量执行实施计划，带检查点和验证",
-  "metadata": {}
-}

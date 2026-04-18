@@ -1,7 +1,0 @@
-{
-  "name": "sp-code-review",
-  "slug": "review",
-  "version": "1.0.0",
-  "description": "代码审查 - 派遣子代理审查代码，早发现早治疗",
-  "metadata": {}
-}
