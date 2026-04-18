@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 获取订阅套餐信息
-    let plan = null
+    let plan: Awaited<ReturnType<typeof db.subscriptionPlan.findUnique>> = null
     if (user.planId) {
       plan = await db.subscriptionPlan.findUnique({
         where: { id: user.planId },

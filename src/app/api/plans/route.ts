@@ -114,8 +114,7 @@ export async function GET(request: NextRequest) {
     if (plans.length === 0) {
       const createdPlans = await db.subscriptionPlan.createMany({
         data: defaultPlans,
-        skipDuplicates: true,
-      })
+      } as any)
       
       const allPlans = await db.subscriptionPlan.findMany({
         orderBy: { sortOrder: 'asc' },

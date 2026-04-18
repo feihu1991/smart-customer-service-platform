@@ -173,8 +173,8 @@ export function AiReplyDialog({ review, open, onClose, onSend }: AiReplyDialogPr
         .then(res => res.json())
         .then(data => {
           if (data.success && data.data && data.data.length > 0) {
-            setReplies(data.data.map((r: { content: string; aiScore: number }, i: number) => ({
-              id: r.id,
+            setReplies(data.data.map((r: { id?: string; content: string; aiScore: number }, i: number) => ({
+              id: r.id || `reply-${i}`,
               style: ['professional', 'warm', 'solution'][i] || 'professional',
               styleLabel: ['专业诚恳', '亲切温暖', '解决方案'][i] || '方案' + (i + 1),
               content: r.content,

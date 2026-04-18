@@ -61,7 +61,7 @@ export async function POST(
           content: msg.content,
         }))
 
-      const aiResponse = await ZAI.chat({
+      const aiResponse = await (ZAI as any).chat({
         messages: [
           {
             role: 'system',

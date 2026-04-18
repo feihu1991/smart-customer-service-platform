@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
 
     let evaluated = 0
     let skipped = 0
-    const results = []
+    const results: Array<{ replyId: string; score: number; isLowQuality: boolean }> = []
 
     for (const reply of repliesToEvaluate) {
       try {

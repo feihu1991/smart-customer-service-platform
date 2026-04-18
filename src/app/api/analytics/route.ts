@@ -12,7 +12,7 @@ export async function GET() {
     const totalTemplates = await db.replyTemplate.count()
 
     // Generate trend data from actual DB data (last 7 days)
-    const trendData = []
+    const trendData: Array<{ date: string; count: number; positive: number; negative: number; neutral: number }> = []
     const now = new Date()
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now)

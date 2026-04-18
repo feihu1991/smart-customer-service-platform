@@ -334,7 +334,7 @@ export function TemplateView() {
                       {template.name}
                     </h3>
                     {template.isBuiltIn && (
-                      <Star className="h-3 w-3 text-yellow-500 flex-shrink-0" title="内置模板" />
+                      <Star className="h-3 w-3 text-yellow-500 flex-shrink-0" />
                     )}
                   </div>
                   <Badge variant="secondary" className={categoryBadgeColors[template.category] || 'bg-gray-100 text-gray-700'}>

@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     await db.user.update({
       where: { id: payment.userId },
       data: {
-        subscriptionTier: payment.planTier,
+        subscriptionTier: payment.planTier as any,
         dailyLimit: await getDailyLimit(payment.planId)
       }
     })

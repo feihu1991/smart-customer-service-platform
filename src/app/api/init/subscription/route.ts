@@ -101,7 +101,7 @@ const defaultPlans = [
 export async function POST(request: NextRequest) {
   try {
     // 创建套餐
-    const createdPlans = await db.subscriptionPlan.createMany({
+    const createdPlans = await (db.subscriptionPlan.createMany as any)({
       data: defaultPlans,
       skipDuplicates: true,
     })
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       where: { phone: '13800138000' },
     })
 
-    let user = existingUser
+    let user = existingUser as NonNullable<typeof existingUser> | Awaited<ReturnType<typeof db.user.create>>
     if (!existingUser) {
       user = await db.user.create({
         data: {

@@ -23,7 +23,7 @@ export async function POST(
     const { style = 'sincere', customInstruction, skipAuth } = body
 
     // 认证检查（skipAuth用于开发测试）
-    let userId = null
+    let userId: string | null = null
     if (!skipAuth) {
       const token = getTokenFromRequest(request)
       if (!token) {
@@ -150,7 +150,6 @@ export async function POST(
             content: reply.text,
             type: 'ai_generated',
             aiScore: reply.score,
-            qualityScore: reply.qualityScore.total,
           },
         })
       )

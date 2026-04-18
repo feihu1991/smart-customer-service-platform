@@ -35,9 +35,10 @@ export async function GET(request: NextRequest) {
     }
     if (type) where.type = type
     if (startDate || endDate) {
-      where.createdAt = {}
-      if (startDate) where.createdAt.gte = new Date(startDate)
-      if (endDate) where.createdAt.lte = new Date(endDate)
+      const createdAt: Record<string, Date> = {}
+      if (startDate) createdAt.gte = new Date(startDate)
+      if (endDate) createdAt.lte = new Date(endDate)
+      where.createdAt = createdAt
     }
 
     // 获取数据

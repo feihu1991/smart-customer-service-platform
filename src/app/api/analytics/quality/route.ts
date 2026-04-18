@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     })
 
     // 4. 质量趋势（最近N天）
-    const trendData = []
+    const trendData: Array<{ date: string; avgScore: number | null; count: number }> = []
     const now = new Date()
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now)

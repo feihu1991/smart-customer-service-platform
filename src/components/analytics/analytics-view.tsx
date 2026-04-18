@@ -9,7 +9,7 @@ import { RecoveryDashboard } from './recovery-dashboard'
 import { QualityDashboard } from './quality-dashboard'
 import {
   Clock, Zap, ThumbsUp, BarChart3, TrendingUp,
-  Target, Award, Users, Target as RecoveryIcon, ShieldCheck
+  Target, Award, Users, ShieldCheck
 } from 'lucide-react'
 
 type Period = '7' | '30' | '90'
@@ -25,6 +25,35 @@ interface AnalyticsData {
   trendData: { date: string; count: number; positive: number; negative: number; neutral: number }[]
   badReviewReasons: { name: string; count: number }[]
   categories: { name: string; count: number }[]
+}
+
+const TAB_ITEMS: { key: ViewTab; label: string; icon: React.ElementType }[] = [
+  { key: 'overview', label: '数据分析', icon: BarChart3 },
+  { key: 'recovery', label: '挽回效果看板', icon: Target },
+  { key: 'quality', label: '质量监控', icon: ShieldCheck },
+]
+
+function TabBar({ activeTab, setActiveTab }: { activeTab: ViewTab; setActiveTab: (tab: ViewTab) => void }) {
+  return (
+    <div className="flex items-center gap-2 border-b">
+      {TAB_ITEMS.map(tab => {
+        const Icon = tab.icon
+        const isActive = activeTab === tab.key
+        return (
+          <Button
+            key={tab.key}
+            variant={isActive ? 'default' : 'ghost'}
+            size="sm"
+            className={`h-10 rounded-none border-b-2 ${isActive ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            <Icon className="h-4 w-4 mr-2" />
+            {tab.label}
+          </Button>
+        )
+      })}
+    </div>
+  )
 }
 
 export function AnalyticsView() {
@@ -53,7 +82,6 @@ export function AnalyticsView() {
   if (loading) {
     return (
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-        {/* Tab Loading */}
         <div className="flex items-center gap-2">
           <Skeleton className="h-10 w-64" />
           <div className="ml-auto flex gap-2">
@@ -70,41 +98,11 @@ export function AnalyticsView() {
     )
   }
 
-  // 如果选择的是质量监控，显示质量监控组件
   if (activeTab === 'quality') {
     return (
       <div>
-        {/* Tab Header */}
         <div className="px-3 sm:px-6 pt-3">
-          <div className="flex items-center gap-2 border-b">
-            <Button
-              variant={activeTab === 'overview' ? 'default' : 'ghost'}
-              size="sm"
-              className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              数据分析
-            </Button>
-            <Button
-              variant={activeTab === 'recovery' ? 'default' : 'ghost'}
-              size="sm"
-              className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-              onClick={() => setActiveTab('recovery')}
-            >
-              <RecoveryIcon className="h-4 w-4 mr-2" />
-              挽回效果看板
-            </Button>
-            <Button
-              variant={activeTab === 'quality' ? 'default' : 'ghost'}
-              size="sm"
-              className={`h-10 rounded-none border-b-2 ${activeTab === 'quality' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-              onClick={() => setActiveTab('quality')}
-            >
-              <ShieldCheck className="h-4 w-4 mr-2" />
-              质量监控
-            </Button>
-          </div>
+          <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
         <div className="p-3 sm:p-6">
           <QualityDashboard />
@@ -113,32 +111,11 @@ export function AnalyticsView() {
     )
   }
 
-  // 如果选择的是挽回效果看板，显示挽回看板组件
   if (activeTab === 'recovery') {
     return (
       <div>
-        {/* Tab Header */}
         <div className="px-3 sm:px-6 pt-3">
-          <div className="flex items-center gap-2 border-b">
-            <Button
-              variant={activeTab === 'overview' ? 'default' : 'ghost'}
-              size="sm"
-              className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              数据分析
-            </Button>
-            <Button
-              variant={activeTab === 'recovery' ? 'default' : 'ghost'}
-              size="sm"
-              className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-              onClick={() => setActiveTab('recovery')}
-            >
-              <RecoveryIcon className="h-4 w-4 mr-2" />
-              挽回效果看板
-            </Button>
-          </div>
+          <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
         <RecoveryDashboard />
       </div>
@@ -153,36 +130,8 @@ export function AnalyticsView() {
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Tab Selector */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2 border-b">
-          <Button
-            variant={activeTab === 'overview' ? 'default' : 'ghost'}
-            size="sm"
-            className={`h-10 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-            onClick={() => setActiveTab('overview')}
-          >
-            <BarChart3 className="h-4 w-4 mr-2" />
-            数据分析
-          </Button>
-          <Button
-            variant={activeTab === 'recovery' ? 'default' : 'ghost'}
-            size="sm"
-            className={`h-10 rounded-none border-b-2 ${activeTab === 'recovery' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-            onClick={() => setActiveTab('recovery')}
-          >
-            <RecoveryIcon className="h-4 w-4 mr-2" />
-            挽回效果看板
-          </Button>
-          <Button
-            variant={activeTab === 'quality' ? 'default' : 'ghost'}
-            size="sm"
-            className={`h-10 rounded-none border-b-2 ${activeTab === 'quality' ? 'border-b-orange-500 bg-transparent text-orange-600 hover:bg-orange-50' : 'border-b-transparent'}`}
-            onClick={() => setActiveTab('quality')}
-          >
-            <ShieldCheck className="h-4 w-4 mr-2" />
-            质量监控
-          </Button>
-        </div>
-        
+        <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
+
         {/* Period Selector */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">统计周期：</span>
@@ -320,14 +269,7 @@ export function AnalyticsView() {
                   { color: 'bg-orange-500', data: [65, 70, 68, 75, 78, 82, 85] },
                   { color: 'bg-green-500', data: [60, 58, 62, 65, 68, 72, 75] },
                   { color: 'bg-blue-500', data: [80, 82, 79, 85, 88, 86, 90] },
-                ].map((line, li) => {
-                  const points = line.data.map((v, i) => ({
-                    x: `${(i / (line.data.length - 1)) * 100}%`,
-                    y: `${100 - v}%`,
-                  }))
-                  // Create SVG polyline
-                  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${parseFloat(p.x) / 100 * 100} ${(parseFloat(p.y) / 100 * 100)}`).join(' ')
-                  return (
+                ].map((line, li) => (
                     <svg
                       key={li}
                       className="absolute inset-0 w-full h-full"
@@ -342,7 +284,6 @@ export function AnalyticsView() {
                         strokeLinejoin="round"
                         points={line.data.map((v, i) => `${(i / (line.data.length - 1)) * 100},${100 - v}`).join(' ')}
                       />
-                      {/* Dots */}
                       {line.data.map((v, i) => (
                         <circle
                           key={i}
@@ -353,8 +294,7 @@ export function AnalyticsView() {
                         />
                       ))}
                     </svg>
-                  )
-                })}
+                ))}
 
                 {/* X-axis labels */}
                 <div className="absolute -bottom-4 left-0 right-0 flex justify-between text-[10px] text-muted-foreground">

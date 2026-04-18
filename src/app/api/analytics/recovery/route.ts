@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { db as prisma } from '@/lib/db';
 
 // GET /api/analytics/recovery - 获取挽回统计数据
 export async function GET(request: NextRequest) {
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 
     // 按类型统计（基于category字段）
     const categoryStats: Record<string, { total: number; recovered: number; rate: number }> = {};
-    const categories = [...new Set(reviews.map(r => r.category || 'unknown'))];
+    const categories: string[] = [...new Set(reviews.map(r => r.category || 'unknown'))];
     for (const category of categories) {
       const categoryReviews = reviews.filter(r => (r.category || 'unknown') === category);
       const categoryRecovered = categoryReviews.filter(r => r.recoveryStatus === 'recovered').length;

@@ -152,9 +152,18 @@ export async function POST() {
       })
     }
 
+    // ===== Create Seed User =====
+    const seedUser = await db.user.create({
+      data: {
+        phone: '13800000001',
+        name: '测试用户',
+      },
+    })
+
     // ===== Create Shops =====
     const shop1 = await db.shop.create({
       data: {
+        userId: seedUser.id,
         name: '旗舰数码店',
         platform: 'taobao',
         logo: '/shops/digital-shop.png',
@@ -164,6 +173,7 @@ export async function POST() {
 
     const shop2 = await db.shop.create({
       data: {
+        userId: seedUser.id,
         name: '时尚女装坊',
         platform: 'taobao',
         logo: '/shops/fashion-shop.png',
@@ -208,7 +218,7 @@ export async function POST() {
 
     // ===== Helper: create reviews for a shop =====
     async function createReviewsForShop(shopId: string, products: { id: string }[], count: number) {
-      const reviews = []
+      const reviews: Array<{ id: string; rating: number; replyStatus: string; content: string }> = []
       for (let i = 0; i < count; i++) {
         // Determine rating with realistic distribution
         const rand = Math.random()
@@ -267,7 +277,7 @@ export async function POST() {
     const orderStatuses = ['pending', 'paid', 'shipped', 'delivered', 'completed', 'refunded']
 
     async function createOrdersForShop(shopId: string, products: { id: string }[], count: number) {
-      const orders = []
+      const orders: Array<{ id: string }> = []
       for (let i = 0; i < count; i++) {
         const product = randomItem(products)
         const status = randomItem(orderStatuses)
@@ -298,7 +308,7 @@ export async function POST() {
 
     // ===== Create Chat Sessions and Messages =====
     async function createChatSessionsForShop(shopId: string, count: number) {
-      const sessions = []
+      const sessions: Array<{ id: string }> = []
       const topicFlows = [
         { topic: 'greeting', msgs: [{ sender: 'customer', content: '你好，在吗？' }, { sender: 'customer_service', content: randomItem(aiReplies.greeting) }] },
         { topic: 'product', msgs: [

@@ -1,9 +1,9 @@
 # 智能客服平台 P0 版本部署指南
 
 ## 📋 版本说明
-- **版本**: P0 种子版本
-- **日期**: 2024年
-- **状态**: 可商用种子版
+- **版本**: v0.2.0
+- **日期**: 2026年4月
+- **状态**: 开发中（19+ 迭代）
 
 ## 🚀 快速开始
 
@@ -29,8 +29,17 @@ XIAOMI_API_KEY=tp-co4w95prj5eftqhfbbafahz21fagbhtm9z6b5vnxycbecztc
 XIAOMI_BASE_URL=https://token-plan-cn.xiaomimimo.com/v1
 AI_MODEL=xiaomi/lh-llama3-8b-instruct-adapter
 
-# JWT密钥
-JWT_SECRET=smart-customer-service-secret-key-2024-p0
+# JWT密钥（生产环境必须设置一个强随机值）
+JWT_SECRET=your-secret-key-here
+
+# 测试验证码（生产环境应接入真实短信服务）
+TEST_SMS_CODE=123456
+
+# 支付宝配置（可选，未配置时使用沙箱模式）
+# ALIPAY_APP_ID=
+# ALIPAY_PRIVATE_KEY=
+# ALIPAY_PUBLIC_KEY=
+# ALIPAY_SANDBOX=true
 
 NODE_ENV=development
 ```
@@ -183,11 +192,12 @@ npx prisma db push --accept-data-loss
 4. [ ] 私有化部署方案
 
 ### 技术优化
-1. [ ] 生产环境使用更强的密码加密（bcrypt）
-2. [ ] 使用真实的JWT token替代UUID
-3. [ ] 添加Redis缓存
-4. [ ] 添加操作日志和审计
-5. [ ] API限流和防护
+1. [x] 生产环境使用更强的密码加密（bcrypt）
+2. [x] JWT_SECRET 改为环境变量配置
+3. [ ] 接入真实短信验证码服务
+4. [ ] 添加Redis缓存
+5. [ ] 添加操作日志和审计
+6. [ ] API限流和防护
 
 ---
 
