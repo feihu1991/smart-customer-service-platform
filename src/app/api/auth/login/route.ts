@@ -62,9 +62,10 @@ export async function POST(request: NextRequest) {
         )
       }
     } else if (code) {
-      // 简化验证码验证：123456为测试验证码
-      // 实际生产应接入短信服务验证
-      if (code !== '123456') {
+      // 验证码登录：从环境变量读取测试验证码（开发环境）
+      // 生产环境应接入短信服务验证
+      const testCode = process.env.TEST_SMS_CODE || '123456'
+      if (code !== testCode) {
         return NextResponse.json(
           { success: false, message: '验证码错误' },
           { status: 401 }

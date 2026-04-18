@@ -4,6 +4,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { hashPassword } from '@/lib/auth'
 
 // 默认套餐配置
 const defaultPlans = [
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
       user = await db.user.create({
         data: {
           phone: '13800138000',
-          password: Buffer.from('123456' + 'smart-customer-service-secret-key-2024').toString('base64'),
+          password: hashPassword('123456'),
           name: '测试用户',
           subscriptionTier: 'basic',
           planId: (await db.subscriptionPlan.findUnique({ where: { tier: 'basic' } }))?.id,

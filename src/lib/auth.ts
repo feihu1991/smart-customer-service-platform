@@ -5,25 +5,35 @@
 import { db } from './db'
 import { v4 as uuidv4 } from 'uuid'
 import { addDays } from 'date-fns'
+import bcrypt from 'bcrypt'
 
-// JWT secret key (生产环境应该从环境变量读取)
-const JWT_SECRET = process.env.JWT_SECRET || 'smart-customer-service-secret-key-2024'
+// JWT secret key
+const JWT_SECRET = process.env.JWT_SECRET
 const TOKEN_EXPIRY_DAYS = 7
 
+if (!JWT_SECRET) {
+  console.warn('[Auth] JWT_SECRET 环境变量未设置，Token 安全性无法保证（仅限开发环境）')
+}
+
+const EFFECTIVE_SECRET = JWT_SECRET || 'smart-customer-service-dev-only-key'
+
 /**
- * 简单的密码哈希（生产环境应使用bcrypt）
+ * 密码哈希（使用 bcrypt）
  */
 export function hashPassword(password: string): string {
-  // 使用简单的base64编码作为演示
-  // 生产环境请使用 bcrypt 或 argon2
-  return Buffer.from(password + JWT_SECRET).toString('base64')
+  return bcrypt.hashSync(password, 10)
 }
 
 /**
  * 验证密码
  */
 export function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash
+  // 兼容旧的 base64 编码密码
+  const legacyHash = Buffer.from(password + EFFECTIVE_SECRET).toString('base64')
+  if (hash === legacyHash) {
+    return true
+  }
+  return bcrypt.compareSync(password, hash)
 }
 
 /**

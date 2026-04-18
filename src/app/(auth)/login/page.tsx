@@ -148,7 +148,7 @@ export default function LoginPage() {
                     获取验证码
                   </button>
                 </div>
-                <p className="mt-1.5 text-xs text-slate-400">测试验证码: 123456</p>
+                <p className="mt-1.5 text-xs text-slate-400">开发环境验证码见服务器日志</p>
               </div>
             )}
 
